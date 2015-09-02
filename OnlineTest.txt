@@ -1,0 +1,18 @@
+
+-- 正样本 全采样
+-- create table lm_trn_label1 as 
+-- select * from wonder_trn
+-- where lable =1 ;
+
+
+create table lm_trn_label1 as 
+select * from (
+select * from lm_trn_40_label1 
+union all 
+select * from lm_trn_60_label1
+)aa;
+
+
+select count(*) from lm_trn_label1;
+
+

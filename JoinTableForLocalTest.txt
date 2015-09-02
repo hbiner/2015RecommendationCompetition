@@ -1,0 +1,28 @@
+
+
+--  —µ¡∑ºØ£∫hb_trn_new_fi_tmp  ≤‚ ‘ºØ£∫hb_tst_in_sub_item_new_fi_tmp
+
+
+
+
+create table lm_trn_new_fi_tmp as 
+select * from hb_trn_new_fi_tmp ;
+
+
+-- create table lm_trn_label1 as 
+-- select * from wonder_trn 
+-- where lable =1 ;
+
+select count(*) from 
+select distinct u,i from lm_trn_new_fi_tmp_label1 ;
+
+
+
+create table wonder_trn as 
+select * from  lm_trn_no_i  a
+left outer join  lm_i_fts_1118_1217  b
+on a.i = b.iid ;
+
+
+
+

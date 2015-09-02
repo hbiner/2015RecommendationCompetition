@@ -1,0 +1,120 @@
+
+-- subset item 
+create table wonder_item_subset as
+select distinct item_id 
+from tianchi_lbs.tianchi_mobile_recommend_train_item ;
+
+
+-- lm_trn_60 , lm_trn_40
+
+create table lm_trn_60_label1 as 
+select * from lm_trn_60 
+where lable =1 ;
+
+create table lm_trn_60_label0 as 
+select * from lm_trn_60 
+where lable =0 ;
+
+
+create table lm_trn_40_label1 as 
+select * from lm_trn_40 
+where lable =1 ;
+
+
+-- get score set 
+create table lm_trn_40_scst_day1_viem  as
+select * from  
+(select b.* from 
+  ( select * from 
+    lm_trn_40 t1 inner join wonder_item_subset t2  on t1.i = t2.item_id 
+  ) a
+  left outer join lm_log_1118_1217  b
+  on a.u =b.uid and a.i = b.iid
+) c
+where tp=1 and dt = "2014-12-17" ;
+
+
+
+
+-- 294232
+select count(*) num from lm_trn_60_label1 ; 
+
+
+-- 1292752651
+select count(*) num from lm_trn_60_label0 ; 
+
+-- PAI -name Declustering -project algo_public -Dfactors="0.5,0.5" -DoutputTableNames="bank_data_train,bank_data_test,bank_data_verify"  -DinputTableName="lm_trn_60_label0";
+
+ -- adjust the label for training set 
+ 
+drop table if exists  lm_trn_60_adj;
+create table lm_trn_60_adj as 
+select * from
+(
+select * 
+from lm_trn_60_label1 
+union all 
+select * from lm_trn_60_label0_small limit 2942320 
+) t ;
+
+
+select count(*) from lm_trn_60_adj    ;
+
+
+-- local predict 
+drop table if exists lm_local_test_result_in_subset;
+create table lm_local_test_result_in_subset as 
+select a.* from
+lm_trn_40_scst_day1_viem b  -- score set 
+inner join
+ local_test_result a
+on a.i = b.iid 
+;
+
+select count(*) from local_test_result  ;
+
+-- local test pairs 
+drop table if exists lm_local_1218_buy_pairs_in_subset ;
+create table lm_local_1218_buy_pairs_in_subset as 
+select a.u user_id , a.i item_id  from
+tianchi_lbs.tianchi_mobile_recommend_train_item b
+inner join 
+lm_trn_40_label1 a
+on a.i = b.item_id ;
+
+
+
+drop table if exists lm_local_predict ;
+create table  lm_local_predict as select  user_id , item_id from 
+( select  u user_id,i item_id  , prediction_score from lm_local_test_result_in_subset 
+   order by prediction_score desc limit 200000) tb1 ;
+   
+   
+
+-- local f1 score evluator
+
+
+insert into table evaluation 
+select round((hits/pnums),4) precision , round((hits/vnums),4) recall , round((2*hits/(pnums+vnums)),4) F1 , 
+        hits , pnums , vnums , getdate() eval_time
+from (
+    select sum(count_hits(p.item_link,v.item_link)) hits,
+           sum(regexp_count(p.item_link,',')+1) pnums,
+           sum(regexp_count(v.item_link,',')+1) vnums
+    from  (
+        select  user_id , wm_concat(',', item_id)  item_link from lm_local_predict group by user_id
+        ) p
+         full outer join (
+         select  user_id , wm_concat(',', item_id) item_link from lm_local_1218_buy_pairs_in_subset group by user_id
+         ) v on p.user_id = v.user_id
+)a;
+
+-- check the table
+select * from evaluation
+
+
+
+
+
+
+

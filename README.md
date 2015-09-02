@@ -4,7 +4,7 @@
 为移动用户在合适的时间、合适的地点精准推荐合适的内容。
 
 最终排名/参赛队伍：37/7186
-![rank](http://yun.baidu.com/share/link?shareid=285212009&uk=218874565)
+![rank](http://yun.baidu.com/s/1i3m1Hwp)
 
 官方链接：http://tianchi.aliyun.com/competition/introduction.htm?spm=5176.100066.333.14.0ozJ7E&raceId=1
 

@@ -1,0 +1,48 @@
+--lm_ui_fts_1118_1217
+--lm_u_fts_1118_1217
+--lm_uc_fts_1118_1217
+--lm_i_fts_1118_1217
+--lm_ui_fts_1119_1218
+--lm_u_fts_1119_1218
+--lm_uc_fts_1119_1218
+--lm_i_fts_1119_1218
+--lm_c_fts_1118_1217 
+--lm_c_fts_1119_1218
+
+create table lm_y1_06240652 as select * from lm_item_subset aa left outer join lm_ui_fts_1119_1218 bb on aa.item_id=bb.ui_iid ;
+create table lm_y2_06240652 as select * from lm_y1_06240652 aa left outer join lm_u_fts_1119_1218 bb on aa.ui_uid=bb.u_uid;
+create table lm_y3_06240652 as select * from lm_y2_06240652 aa left outer join lm_uc_fts_1119_1218 bb on aa.ui_uid=bb.uc_uid and aa.ui_ic=bb.uc_ic;
+create table lm_y4_06240652 as select * from lm_y3_06240652 aa left outer join lm_i_fts_1119_1218 bb on aa.ui_iid=bb.i_iid;
+create table lm_y5_06240652 as select * from lm_y4_06240652 aa left outer join lm_c_fts_1119_1218 bb on aa.ui_ic=bb.c_ic; 
+
+-- 增加 联合特征,ic,uic
+-- 1093775243
+create table lm_y6_06240652 as select a.* ,
+a.i_f1*1.0/(a.c_f19+0.0001) as ic_f1,a.i_f2*1.0/(a.c_f20+0.0001) as ic_f2,a.i_f3*1.0/(a.c_f21+0.0001) as ic_f3,a.i_f4*1.0/(a.c_f22+0.0001) as ic_f4,a.i_f5*1.0/(a.c_f23+0.0001) as ic_f5,a.i_f6*1.0/(a.c_f24+0.0001) as ic_f6,a.i_f7*1.0/(a.c_f25+0.0001) as ic_f7,a.i_f8*1.0/(a.c_f26+0.0001) as ic_f8,a.i_f9*1.0/(a.c_f27+0.0001) as ic_f9,a.i_f10*1.0/(a.c_f28+0.0001) as ic_f10,a.i_f11*1.0/(a.c_f29+0.0001) as ic_f11,a.i_f12*1.0/(a.c_f30+0.0001) as ic_f12,a.i_f13*1.0/(a.c_f31+0.0001) as ic_f13,a.i_f14*1.0/(a.c_f32+0.0001) as ic_f14,a.i_f15*1.0/(a.c_f33+0.0001) as ic_f15,a.i_f16*1.0/(a.c_f34+0.0001) as ic_f16,a.i_f17*1.0/(a.c_f35+0.0001) as ic_f17,a.i_f18*1.0/(a.c_f36+0.0001) as ic_f18,a.i_f19*1.0/(a.c_f37+0.0001) as ic_f19,a.i_f20*1.0/(a.c_f38+0.0001) as ic_f20,
+case when (a.ui_f142 > a.uc_f205)  then 0 else 1 end as uic_f1 -- ((ui_last_buy_dis_hours > uc_lately_tp_dnt_hr[3] )
+from lm_y5_06240652 a ;
+
+--------------------------------- predict --=--------
+
+PAI 
+-name Prediction 
+-project algo_public 
+-DdetailColName="prediction_detail" 
+-DsplitCharacteristic="1" 
+-DappendColNames="ui_uid,ui_iid"  
+-DmodelName="lm_m_GBDT_06261656" 
+-DresultColName="prediction_result" 
+-DoutputTableName="lm_online_result_262037" 
+-DscoreColName="prediction_score" 
+-DinputTableName="lm_y6_06240652";
+
+create table lm_submit_cache as 
+select ui_uid as user_id,ui_iid as item_id from lm_online_result_262037 order by prediction_score desc limit 180000 ;
+         
+ 
+create table lm_loc_result as 
+select * from lm_m_GBDT_loc_test_06261656 order by prediction_score desc limit 180000 ;
+
+show p ; 
+
+

@@ -1,0 +1,14 @@
+insert into table evaluation 
+select round((hits/pnums),4) precision , round((hits/vnums),4) recall , round((2*hits/(pnums+vnums)),4) F1 , 
+        hits , pnums , vnums , getdate() eval_time
+from (
+    select sum(count_hits(p.item_link,v.item_link)) hits,
+           sum(regexp_count(p.item_link,',')+1) pnums,
+           sum(regexp_count(v.item_link,',')+1) vnums
+    from  (
+        select  user_id , wm_concat(',', item_id)  item_link from vpredict group by user_id
+        ) p
+         full outer join (
+         select  user_id , wm_concat(',', item_id) item_link from valid group by user_id
+         ) v on p.user_id = v.user_id
+)a;

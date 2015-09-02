@@ -1,0 +1,148 @@
+
+-- Select rank() over(partition by s_class order by s_score desc) as 名次,s_class,s_id,s_score from s_score
+
+
+
+-- step1.1 ---- rank ------
+create table hb_app_0_7_rk_temp1 as 
+select tb.* ,
+rank() over(partition by 1  order by tb.ps1 desc ) as rk1, 
+rank() over(partition by 1  order by tb.ps2 desc ) as rk2,
+rank() over(partition by 1  order by tb.ps3 desc ) as rk3,
+rank() over(partition by 1  order by tb.ps4 desc ) as rk4,
+rank() over(partition by 1  order by tb.ps5 desc ) as rk5
+from hb_app_0_7 tb ;
+
+
+-- step1.2 ---- rank ------
+create table hb_app_0_7_rk as 
+select tb.* ,
+rank() over(partition by 1  order by tb.ps6 desc ) as rk6,
+rank() over(partition by 1  order by tb.ps7 desc ) as rk7,
+rank() over(partition by 1  order by tb.ps8 desc ) as rk8
+from hb_app_0_7_rk_temp1 tb ;
+
+
+
+-- step2 ---  calculate ------
+create table hb_app_0_7_rk_score as
+select 
+hb_app_0_7_rk.* ,
+1.0/8 *exp(-1*rk1) + 1.0/8 *exp(-1*rk2) + 1.0/8 *exp(-1*rk3) + 1.0/8 *exp(-1*rk4) + 1.0/8 *exp(-1*rk5) + 1.0/8 *exp(-1*rk6) + 1.0/8 *exp(-1*rk7) + 1.0/8 *exp(-1*rk8)
+as score -- rank 指数排名
+--(p1+p2) /2 as score                      -- 平均值
+from hb_app_0_7_rk ;
+
+
+-- step3  ------ submit --------
+create table hb_app_0_7_rk_score_top25w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_0_7_rk_score
+order by score desc limit 250000 ;
+
+-- step3  ------ submit --------
+create table hb_app_0_7_rk_score_top15w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_0_7_rk_score
+order by score desc limit 150000 ;
+
+-- step3  ------ submit --------
+create table hb_app_0_7_rk_score_top30w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_0_7_rk_score
+order by score desc limit 300000 ;
+
+-- step3  ------ submit --------
+create table hb_app_0_7_rk_score_top35w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_0_7_rk_score
+order by score desc limit 350000 ;
+
+----------------------------------------------------------------------------------------
+--------------------------------------   local test ----------------------------------------
+----------------------------------------------------------------------------------------
+
+drop table if exists hb_app_0_7_rk_score_top25w ;
+create table hb_app_0_7_rk_score_top25w as 
+select hb_app_0_7_rk_score.*
+from hb_app_0_7_rk_score
+order by score desc limit 250000 ;
+
+select count(*) from hb_app_0_7_rk_score_top25w where lable =1;
+
+
+drop table if exists hb_app_0_7_rk_ps4_top25w ;
+create table hb_app_0_7_rk_ps4_top25w as 
+select hb_app_0_7_rk_score.*
+from hb_app_0_7_rk_score
+order by ps4 desc limit 250000 ;
+
+
+
+
+
+----------------------------------------------------------------------------------------
+--------------------------------------   online ----------------------------------------
+----------------------------------------------------------------------------------------
+
+-- step1.1 ---- rank ------
+create table hb_app_onl_0_7_rk_temp1 as 
+select tb.* ,
+rank() over(partition by 1  order by tb.ps1 desc ) as rk1, 
+rank() over(partition by 1  order by tb.ps2 desc ) as rk2,
+rank() over(partition by 1  order by tb.ps3 desc ) as rk3,
+rank() over(partition by 1  order by tb.ps4 desc ) as rk4,
+rank() over(partition by 1  order by tb.ps5 desc ) as rk5
+from hb_app_onl_0_7 tb ;
+
+
+-- step1.2 ---- rank ------
+create table hb_app_onl_0_7_rk as 
+select tb.* ,
+rank() over(partition by 1  order by tb.ps6 desc ) as rk6,
+rank() over(partition by 1  order by tb.ps7 desc ) as rk7,
+rank() over(partition by 1  order by tb.ps8 desc ) as rk8
+from hb_app_onl_0_7_rk_temp1 tb ;
+
+
+
+-- step2 ---  calculate ------
+create table hb_app_onl_0_7_rk_score as
+select 
+hb_app_onl_0_7_rk.* ,
+1.0/8 *exp(-1*rk1) + 1.0/8 *exp(-1*rk2) + 1.0/8 *exp(-1*rk3) + 1.0/8 *exp(-1*rk4) + 1.0/8 *exp(-1*rk5) + 1.0/8 *exp(-1*rk6) + 1.0/8 *exp(-1*rk7) + 1.0/8 *exp(-1*rk8)
+as score -- rank 指数排名
+--(p1+p2) /2 as score                      -- 平均值
+from hb_app_onl_0_7_rk;
+
+
+-- step3  ------ submit --------
+create table hb_app_onl_0_7_rk_score_top25w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_onl_0_7_rk_score
+order by score desc limit 250000 ;
+
+-- step3  ------ submit --------
+create table hb_app_onl_0_7_rk_score_top15w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_onl_0_7_rk_score
+order by score desc limit 150000 ;
+
+-- step3  ------ submit --------
+create table hb_app_onl_0_7_rk_score_top30w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_onl_0_7_rk_score
+order by score desc limit 300000 ;
+
+-- step3  ------ submit --------
+create table hb_app_onl_0_7_rk_score_top35w as 
+select ui_uid  ,ui_iid  ,score
+from hb_app_onl_0_7_rk_score
+order by score desc limit 350000 ;
+
+
+
+
+
+
+

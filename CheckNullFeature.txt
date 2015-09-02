@@ -1,0 +1,35 @@
+
+-- 1565267
+select count (*)
+from wonder_trn 
+where  not ui_f3 =0 ;
+
+--  33993647
+select count (*)
+from wonder_trn 
+where  not ui_f135 =0 ;
+
+-- 0
+select count (*)
+from wonder_trn 
+where  not uc_f75 =0 ;
+
+-- 0
+select count (*)
+from wonder_trn 
+where  not uc_f79 =0 ;
+
+
+-- 
+select count (*)
+from wonder_trn 
+where u_f77 is null ;
+
+select u,i,u_f77 from wonder_trn limit 100;
+
+select * from lm_trn_40_scst_day1_viem limit 50 ;
+
+
+show p ;
+
+

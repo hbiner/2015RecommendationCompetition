@@ -1,0 +1,63 @@
+--desc lm_ui_fts_1118_1217;     --(ui_uid,ui_iid,ui_ic,ui_f1,...,ui_f198)
+--desc lm_u_fts_1118_1217;      --(u_uid,u_f1,...,u_f188)
+--desc lm_uc_fts_1118_1217;     --(uc_uid,uc_ic,uc_f1,...,uc_f205)
+--desc lm_i_fts_1118_1217_logx1;--(iid,i_f1,...,i_f172)
+
+--lm_ui_fts_1119_1218;          --(ui_uid,ui_iid,ui_ic,ui_f1,...,ui_f198)
+--lm_u_fts_1119_1218;           --(u_uid,u_f1,...,u_f188)
+--lm_uc_fts_1119_1218;          --(uc_uid,uc_ic,uc_f1,...,uc_f205)
+--lm_i_fts_1119_1218_logx1;     --(iid,i_f1,...,i_f172)
+
+--desc hb_buy_ui_1218;          --(uid,iid,ic)
+--desc hb_buy_ui_1218_u_i;      --(u,i,c)
+
+------------------------------------------d1view_d5cart--------------------------------------
+--hb_trn_d1view_d5cart_uic;             --uid,iid,ic(hb_trn_d1view_d5cart_u_i_c)
+--hb_tst_d1view_d5cart_uic_in_sub_item; --uid,iid,ic(hb_tst_d1view_d5cart_in_sub_item_u_i_c)
+
+------------------------------------------d1view_d7cart--------------------------------------
+--hb_uic_d1view_d7cart_trn;             --(u,i,c)--111395768
+--hb_uic_d1view_d7cart_tst_in_sub_item; --(u,i,c)--
+
+------------------------------------------d1view_d5cart--------------------------------------
+--desc hb_trn_d1view_d5cart_uic;--(uid,iid,ic)
+--desc hb_tst_d1view_d5cart_uic;--(uid,iid,ic)
+--desc hb_tst_d1view_d5cart_uic_in_sub_item;--(uid,iid,ic)
+
+------------------------------------------d1view_d3cart--------------------------------------
+create table hb_uic_d1view_d3cart_trn as select distinct uid,iid,ic from hb_log_1214_1218 where (dt='12-17' and tp=1) or (dt>'12-14' and dt<'12-18' and tp=3);--86910527
+create table hb_uic_d1view_d3cart_tst as select distinct uid,iid,ic from hb_log_1214_1218 where (dt='12-18' and tp=1) or (dt>'12-15' and tp=3);--85283855
+create table hb_uic_d1view_d3cart_tst_in_sub_item as select aa.uid,aa.iid,aa.ic from hb_uic_d1view_d3cart_tst aa left outer join 
+hb_sub_item_set_dis_iid_cg bb on aa.iid=bb.item_id where bb.item_id is not null;--7634331
+
+------------------------------------------d1view_d2cart--------------------------------------
+create table hb_uic_d1view_d2cart_trn as select distinct uid,iid,ic from hb_log_1214_1218 where (dt='12-17' and tp=1) or (dt>'12-15' and dt<'12-18' and tp=3);--82719494
+create table hb_uic_d1view_d2cart_tst as select distinct uid,iid,ic from hb_log_1214_1218 where (dt='12-18' and tp=1) or (dt>'12-16' and tp=3);--81116090
+create table hb_uic_d1view_d2cart_tst_in_sub_item as select aa.uid,aa.iid,aa.ic from hb_uic_d1view_d2cart_tst aa left outer join 
+hb_sub_item_set_dis_iid_cg bb on aa.iid=bb.item_id where bb.item_id is not null;--7252072
+
+------------------------------------------d3view--------------------------------------
+create table hb_uic_d3view_trn as select distinct uid,iid,ic from hb_log_1214_1218 where (dt>'12-14' and dt<'12-18' and tp=1);--231663338
+create table hb_uic_d3view_tst as select distinct uid,iid,ic from hb_log_1214_1218 where (dt>'12-15' and tp=1);--227528777
+create table hb_uic_d3view_tst_in_sub_item as select aa.uid,aa.iid,aa.ic from hb_uic_d3view_tst aa left outer join 
+hb_sub_item_set_dis_iid_cg bb on aa.iid=bb.item_id where bb.item_id is not null;--20863771
+
+------------------------------------------d3view_d3cart--------------------------------------
+create table hb_uic_d3view_d3cart_trn as select distinct uid,iid,ic from hb_log_1214_1218 where ((dt>'12-14' and dt<'12-18') and (tp=1 or tp=3));--232083516
+create table hb_uic_d3view_d3cart_tst as select distinct uid,iid,ic from hb_log_1214_1218 where (dt>'12-15' and (tp=1 or tp=3));--227944153
+create table hb_uic_d3view_d3cart_tst_in_sub_item as select aa.uid,aa.iid,aa.ic from hb_uic_d3view_d3cart_tst aa left outer join 
+hb_sub_item_set_dis_iid_cg bb on aa.iid=bb.item_id where bb.item_id is not null;--20891028
+
+------------------------------------------1216cart/1217cart--------------------------------------
+create table hb_uic_1216cart_trn as select distinct uid,iid,ic from hb_log_1214_1218 where (dt='12-16' and tp=3);--4841053
+---´íÎó---create table hb_uic_1217cart_tst_old as select distinct uid,iid,ic from hb_log_1214_1218 where (dt>'12-17' and tp=3);--4653499
+---´íÎó---create table hb_uic_1217cart_tst_in_sub_item_old as select aa.uid,aa.iid,aa.ic from hb_uic_1217cart_tst aa left outer join 
+---´íÎó---hb_sub_item_set_dis_iid_cg bb on aa.iid=bb.item_id where bb.item_id is not null;--412904
+create table hb_uic_1217cart_tst as select distinct uid,iid,ic from hb_log_1214_1218 where (dt='12-17' and tp=3);--4653499
+create table hb_uic_1217cart_tst_in_sub_item as select aa.uid,aa.iid,aa.ic from hb_uic_1217cart_tst aa left outer join 
+hb_sub_item_set_dis_iid_cg bb on aa.iid=bb.item_id where bb.item_id is not null;--412904 
+
+
+
+
+

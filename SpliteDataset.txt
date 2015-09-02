@@ -1,0 +1,40 @@
+
+
+--- local train set  and label 
+create table lm_log_1118_1216 as 
+select * from lm_tianchi_mobile_recommend_train_user
+where  dt >= "2014-11-18" and dt <= "2014-12-16" ;
+
+-- local test set 
+drop table if exists lm_log_1119_1217 ;
+
+
+-- buy pairs set 
+create table  lm_buy_ui_1218_u_i as
+select u label_u,i label_i ,c label_c  from  hb_buy_ui_1218_u_i ;
+
+drop table if exists  lm_log_buy_pairs_1218 ;
+create table lm_log_buy_pairs_1218 as 
+select  distinct user_id  , item_id  from tianchi_lbs.tianchi_mobile_recommend_train_user
+where  tp = 4 and dt = "2014-12-18" ;
+
+
+-- online  
+create table lm_log_1118_1217 as 
+select * from lm_tianchi_mobile_recommend_train_user
+where  dt >= "2014-11-18" and dt <= "2014-12-17" ;
+
+-- online
+create table lm_log_1119_1218 as 
+select * from lm_tianchi_mobile_recommend_train_user
+where  dt >= "2014-11-19" and dt <= "2014-12-18" ;
+
+
+select count(*) from lm_log_buy_pairs_1217 ;
+
+select count(*) from lm_tianchi_mobile_recommend_train_user ;
+
+select count(*) from tianchi_lbs.tianchi_mobile_recommend_train_user ;
+
+
+
